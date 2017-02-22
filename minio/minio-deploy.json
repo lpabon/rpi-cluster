@@ -1,0 +1,86 @@
+{
+  "kind": "List",
+  "apiVersion": "v1",
+  "items": [
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "minio",
+        "labels": {
+          "minioserver": "minio-service",
+          "deploy-minio": "support"
+        },
+        "annotations": {
+          "description": "Exposes Heketi Service"
+        }
+      },
+      "spec": {
+        "type": "NodePort",
+        "selector": {
+          "name": "minio"
+        },
+        "ports": [
+          {
+            "name": "minio",
+            "port": 9000,
+            "targetPort": 9000
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Deployment",
+      "apiVersion": "extensions/v1beta1",
+      "metadata": {
+        "name": "minio",
+        "labels": {
+          "minioserver": "minio-deployment"
+        },
+        "annotations": {
+          "description": "Defines how to deploy Heketi"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "template": {
+          "metadata": {
+            "name": "minio",
+            "labels": {
+              "name": "minio",
+              "minioserver": "minio-pod"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "lpabon/minio-rpi",
+                "imagePullPolicy": "Always",
+                "name": "minio",
+                "ports": [
+                  {
+                    "containerPort": 9000
+                  }
+                ],
+                "volumeMounts": [
+                    {
+                      "mountPath": "/objects",
+                      "name": "minio-store"
+                    }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "minio-store",
+                "persistentVolumeClaim": {
+                    "claimName": "nfs-rpi"
+              }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
