@@ -6,25 +6,25 @@
       "kind": "Service",
       "apiVersion": "v1",
       "metadata": {
-        "name": "minio",
+        "name": "calibre",
         "labels": {
-          "minioserver": "minio-service",
-          "deploy-minio": "support"
+          "calibreserver": "calibre-service",
+          "deploy-calibre": "support"
         },
         "annotations": {
-          "description": "Exposes Minio Service"
+          "description": "Exposes Calibre Service"
         }
       },
       "spec": {
         "type": "NodePort",
         "selector": {
-          "name": "minio"
+          "name": "calibre"
         },
         "ports": [
           {
-            "name": "minio",
-            "port": 9000,
-            "targetPort": 9000
+            "name": "calibre",
+            "port": 8080,
+            "targetPort": 8080
           }
         ]
       }
@@ -33,58 +33,48 @@
       "kind": "Deployment",
       "apiVersion": "extensions/v1beta1",
       "metadata": {
-        "name": "minio",
+        "name": "calibre",
         "labels": {
-          "minioserver": "minio-deployment"
+          "calibreserver": "calibre-deployment"
         },
         "annotations": {
-          "description": "Defines how to deploy Minio"
+          "description": "Defines how to deploy Calibre"
         }
       },
       "spec": {
         "replicas": 1,
         "template": {
           "metadata": {
-            "name": "minio",
+            "name": "calibre",
             "labels": {
-              "name": "minio",
-              "minioserver": "minio-pod"
+              "name": "calibre",
+              "calibreserver": "calibre-pod"
             }
           },
           "spec": {
             "containers": [
               {
-                "image": "lpabon/minio-rpi",
+                "image": "lpabon/calibre-rpi",
                 "imagePullPolicy": "Always",
-                "name": "minio",
-                "env": [
-                  {
-                    "name": "MINIO_ACCESS_KEY",
-                    "value": "minioaccess"
-                  },
-                  {
-                    "name": "MINIO_SECRET_KEY",
-                    "value": "miniosecret"
-                  }
-                ],
+                "name": "calibre",
                 "ports": [
                   {
-                    "containerPort": 9000
+                    "containerPort": 8080
                   }
                 ],
                 "volumeMounts": [
                     {
-                      "mountPath": "/objects",
-                      "name": "minio-store"
+                      "mountPath": "/calibre",
+                      "name": "calibre-store"
                     }
                 ]
               }
             ],
             "volumes": [
               {
-                "name": "minio-store",
+                "name": "calibre-store",
                 "persistentVolumeClaim": {
-                    "claimName": "minio"
+                    "claimName": "calibre"
               }
               }
             ]

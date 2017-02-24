@@ -13,4 +13,4 @@ VOLUME /objects
 ENTRYPOINT ["/usr/bin/minio"]
 
 EXPOSE 9000
-CMD ["server", "/objects"]
+CMD ["server", "--config-dir", "/objects/.minio.config", "/objects"]
