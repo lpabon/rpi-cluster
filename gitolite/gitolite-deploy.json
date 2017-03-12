@@ -1,0 +1,86 @@
+{
+  "kind": "List",
+  "apiVersion": "v1",
+  "items": [
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "gitolite",
+        "labels": {
+          "gitoliteserver": "gitolite-service",
+          "deploy-gitolite": "support"
+        },
+        "annotations": {
+          "description": "Exposes Gitolite Service over ssh"
+        }
+      },
+      "spec": {
+        "type": "NodePort",
+        "selector": {
+          "name": "gitolite"
+        },
+        "ports": [
+          {
+            "name": "gitolite",
+            "port": 22,
+            "targetPort": 22
+          }
+        ]
+      }
+    },
+    {
+      "kind": "Deployment",
+      "apiVersion": "extensions/v1beta1",
+      "metadata": {
+        "name": "gitolite",
+        "labels": {
+          "gitoliteserver": "gitolite-deployment"
+        },
+        "annotations": {
+          "description": "Defines how to deploy gitolite"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "template": {
+          "metadata": {
+            "name": "gitolite",
+            "labels": {
+              "name": "gitolite",
+              "gitoliteserver": "gitolite-pod"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "lpabon/gitolite-rpi",
+                "imagePullPolicy": "Always",
+                "name": "gitolite",
+                "ports": [
+                  {
+                    "containerPort": 22
+                  },
+                "volumeMounts": [
+                    {
+                      "mountPath": "/home/git",
+                      "name": "gitolite-store"
+                    }
+                ]
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "gitolite-store",
+                "persistentVolumeClaim": {
+                    "claimName": "gitolite"
+              }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
