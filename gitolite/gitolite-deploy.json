@@ -60,13 +60,13 @@
                 "ports": [
                   {
                     "containerPort": 22
-                  }
-                ],
+                  },
                 "volumeMounts": [
                     {
                       "mountPath": "/home/git",
                       "name": "gitolite-store"
                     }
+                ]
                 ]
               }
             ],
